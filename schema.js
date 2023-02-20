@@ -20,7 +20,7 @@ exports.typeDefs = gql `
     type Query {
         getEmployees: [Employee]
         getEmployeeByID(id: ID!): Employee
-        login(id: ID!): User
+        login(username: String!, password: String!): User
     }
 
     type Mutation {
@@ -37,7 +37,7 @@ exports.typeDefs = gql `
             gender: String!
             salary: Float!): Employee
         
-        deleteEmployee(id: String!): Employee
+        deleteEmployee(id: String!): String
 
         register(username: String!
             email: String!

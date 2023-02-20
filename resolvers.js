@@ -6,97 +6,58 @@ const { GraphQLError } = require('graphql');
 exports.resolvers = {
     Query: {
         getEmployees: async (parent, args) => {
-            try {
-                return Employee.find({})
-            } catch (err) {
-                return err
-            }  
+            const employees = await Employee.find()
+            if(employees.length < 1) throw new Error("Rawr!")
+            return employees
         },
         getEmployeeByID: async (parent, args) => {
-            try {
-                return Employee.findById({_id: args.id})
-            } catch (err) {
-                return err
-            }
+            const emp = await Employee.findById({_id: args.id})
+            if (!emp) throw new Error("Employee not found.")
+            return emp
         },
         login: async (parent, args) => {
-            try {
-                let user = User.findById({_id: args.id})
-                user.verifyPassword(user.id, (err, isMatch) => {
-                    if (err) throw err
-                    if (!isMatch) throw new GraphQLError('Cannot verify credentials.')
-                })
-                return user;
-            } catch (err) {
-                return err
-            }
+            let user = await User.findOne({username: args.username})
+            if (!user) throw new Error ("Cannot verify credentials. Check username and password.")
+            const isMatch = await new Promise((resolve, reject) => {
+                user.verifyPassword(args.password, (err, isMatch) => {
+                    if (err) reject(err);
+                    resolve(isMatch);
+                });
+            });
+            console.log(isMatch)
+            if (!isMatch) throw new Error("Cannot verify credentials. Check username and password.")
+            return user;
         }
     },
 
     Mutation: {
         addEmployee: async (parent, args) => {
-            let newEmp;
-            let result;
-            try {
-                newEmp = new Employee({
-                    firstname: args.firstname,
-                    lastname: args.lastname,
-                    email: args.email,
-                    gender: args.gender,    
-                    salary: args.salary
-                })
-                return newEmp.save()
-            } catch (err) {
-                return err
-            }
+            let newEmp = new Employee(args)
+            let empResult = await newEmp.save()
+            if (!empResult) throw new Error("Employee was not created.")
+            return empResult
         },
         register: async (parent, args) => {
-            let newUser;
-            let result;
-            try {
-                newUser = new User({
-                    username: args.firstname,
-                    email: args.email,
-                    password: args.password
-                })
-                return newUser.save()
-            } catch (err) {
-                return err
-            }
+            let newUser = new User(args)
+            let userResult = await newUser.save()
+            if (!userResult) throw new Error("User was not created.")
+            return userResult
         },
         updateEmployee: async (parent, args) => {
-            try {
-                if (!args.id){
-                    throw new GraphQLError('No ID provided.');
-                }
-                return await Employee.findOneAndUpdate({_id: args.id},
-                    {
-                        $set: {
-                            firstname: args.firstname,
-                            lastname: args.lastname,
-                            email: args.email,
-                            gender: args.gender,
-                            salary: args.salary
-                        }
-                    }, {new: true}, (err, employee) => {
-                        if (err) 
-                        {
-                            throw new GraphQLError('Update Unsuccessful.')
-                        } else 
-                        {
-                            return employee
-                        }
-                    });
-            } catch (err) {
-                return err
+            const employee = await Employee.findByIdAndUpdate(args.id, args, { new: true });
+            if (!employee) {
+                throw new Error("Employee update failed");
             }
-      },
-      deleteEmployee: async (parent, args) => {
-        try {
-            return await Employee.findByIdAndDelete(args.id)
-        }catch (err) {
-            return err;
+            return employee;
+        },
+        deleteEmployee: async (parent, args) => {
+            console.log(args.id)
+            const result = await Employee.findByIdAndDelete(args.id);
+            console.log(result)
+            if (!result) {
+                throw new Error("User deletion failed");
+            }
+            return "User deleted successfully."
         }
-      }
     }
 }
