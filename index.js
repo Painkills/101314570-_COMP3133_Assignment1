@@ -48,4 +48,4 @@ server.applyMiddleware({app})
 
 // fire up the ol' server
 app.listen({ port: process.env.PORT }, () =>
-  console.log(`Server listening at http://localhost:${process.env.PORT}${server.graphqlPath}`));
+  console.log(`Server listening at https://101314570-comp-3133-assignment1.vercel.app/${process.env.PORT}${server.graphqlPath}`));
