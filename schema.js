@@ -2,7 +2,7 @@ const { gql } = require('apollo-server-express');
 
 exports.typeDefs = gql `
     type Employee {
-        id: ID!
+        id: String!
         firstname: String!
         lastname: String!
         email: String!
@@ -11,7 +11,7 @@ exports.typeDefs = gql `
     }
 
     type User {
-        id: ID!
+        id: String!
         username: String!
         password: String!
         email: String!
@@ -19,7 +19,7 @@ exports.typeDefs = gql `
 
     type Query {
         getEmployees: [Employee]
-        getEmployeeByID(id: ID!): Employee
+        getEmployeeByID(id: String!): Employee
         login(username: String!, password: String!): User
     }
 
