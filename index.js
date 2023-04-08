@@ -39,7 +39,11 @@ const server = new ApolloServer({
 // set up Express Server including body parser and cors
 const app = express();
 app.use(bodyParser.json());
-app.use('*', cors());
+// app.use('*', cors());
+app.use(cors({
+  origin: 'https://101314570-comp3133-assig2-5cug535rf-painkills.vercel.app'
+}
+))
 
 // use express as middleware
 server.applyMiddleware({app})
