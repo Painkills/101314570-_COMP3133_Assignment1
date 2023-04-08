@@ -40,10 +40,15 @@ const server = new ApolloServer({
 const app = express();
 app.use(bodyParser.json());
 // app.use('*', cors());
-app.use(cors({
-  origin: 'https://101314570-comp3133-assig2-5cug535rf-painkills.vercel.app'
-}
-))
+// app.use(cors({
+//   origin: 'https://101314570-comp3133-assig2-5cug535rf-painkills.vercel.app'
+// }))
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Methods", ["GET", "POST", "OPTIONS", "PUT", "DELETE"]);
+  next();
+});
 
 // use express as middleware
 server.applyMiddleware({app})
