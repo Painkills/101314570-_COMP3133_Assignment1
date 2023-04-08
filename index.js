@@ -1,27 +1,27 @@
 // basic imports: express, mongoose
-const express = require('express');
-const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
+import express from 'express';
+import { connect } from 'mongoose';
+import { json } from 'body-parser';
 
 // get cors to avoid issues with Cross-Origin once frontend is built
-const cors = require('cors');
+import cors from 'cors';
 
 // get the schema and resolver
-const TypeDefs = require('./schema')
-const Resolvers = require('./resolvers')
+import { typeDefs as _typeDefs } from './schema';
+import { resolvers as _resolvers } from './resolvers';
 
 // import apollo server
-const { ApolloServer } = require('apollo-server-express')
+import { ApolloServer } from 'apollo-server-express';
 
 // hide secrets in environment variables
-const envVars = require('dotenv');
-envVars.config();
+import { config } from 'dotenv';
+config();
 
 // set up the db connection string
 const mongodb_atlas_url = process.env.MONGODB_URL;
 
 // connect to db using mongoose
-mongoose.connect(mongodb_atlas_url, {
+connect(mongodb_atlas_url, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(success => {
@@ -32,13 +32,13 @@ mongoose.connect(mongodb_atlas_url, {
 
 // set up the apollo server with the schema and resolver
 const server = new ApolloServer({
-  typeDefs: TypeDefs.typeDefs,
-  resolvers: Resolvers.resolvers
+  typeDefs: _typeDefs,
+  resolvers: _resolvers
 })
 
 // set up Express Server including body parser and cors
 const app = express();
-app.use(bodyParser.json());
+app.use(json());
 // app.use(cors('*'));
 // app.use(cors({
 //   origin: 'https://101314570-comp3133-assig2-5cug535rf-painkills.vercel.app'
